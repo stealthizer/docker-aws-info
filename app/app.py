@@ -24,12 +24,24 @@ def aws_info():
     instanceId = get_instance_id()
     instance_data = describe_instances(instanceId)['Reservations'][0]['Instances'][0]
     instanceType = instance_data['InstanceType']
+    terminationNotice = ''
+    status = ''
     try:
         instanceLifecycle = instance_data['InstanceLifecycle']
     except:
         instanceLifecycle = 'normal'
+    else:
+        response = requests.get('http://169.254.169.254/latest/meta-data/spot/termination-time')
+        if response.status_code == 404:
+            terminationNotice = 'no termination notice'
+            status = None
+        else:
+            terminationNotice = response.text
+            status = 'terminate'
+    print(status)
+    print(terminationNotice)
     return render_template('instance_template.html', instanceId=instanceId, instanceType=instanceType,
-                           instanceLifecycle=instanceLifecycle)
+                           instanceLifecycle=instanceLifecycle, terminationNotice=terminationNotice, status=status)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)

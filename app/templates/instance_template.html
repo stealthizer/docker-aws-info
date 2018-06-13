@@ -13,6 +13,11 @@
     <br>
     <p>instance.type : {{ instanceType }}
     <br>instance.lifecycle : {{ instanceLifecycle }}
+    {% if status %}
+    <div class="p-3 mb-2 bg-danger text-white">{{ terminationNotice }}</div>
+    {% else %}
+    <div>No Termination Notice</div>
+    {% endif %}
 </div>
 </body>
 </html>
