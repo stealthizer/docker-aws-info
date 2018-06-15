@@ -6,6 +6,18 @@ import requests
 
 app = Flask(__name__)
 
+def get_termination_time_demo():
+    dynamodb = session.resource('dynamodb', region_name=region)
+    table = dynamodb.Table('terminateDB')
+    try:
+        response = table.scan(Limit=1)
+        terminationNotice = response['Items'][0]['termination']
+        status = 'terminate'
+    except Exception as e:
+        print(e)
+        terminationNotice = "No Termination Notice"
+        status = None
+
 def describe_instances(instanceId):
     client = boto3.client('ec2', region_name='eu-west-1')
     try:
@@ -38,6 +50,9 @@ def aws_info():
         else:
             terminationNotice = response.text
             status = 'terminate'
+        get_termination_time_demo()
+
+
     print(status)
     print(terminationNotice)
     return render_template('instance_template.html', instanceId=instanceId, instanceType=instanceType,
