@@ -3,21 +3,59 @@
 <head>
     <title>AWS Info</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="5">
+    <meta http-equiv="refresh" content="10">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
 </head>
 <body>
 <div class="container">
     <h1>{{ instanceId }}</h2>
-    <br>
-    <p>instance.type : {{ instanceType }}
-    <br>instance.lifecycle : {{ instanceLifecycle }}
-    {% if status %}
-    <div class="p-3 mb-2 bg-danger text-white">{{ terminationNotice }}</div>
-    {% else %}
-    <div>No Termination Notice</div>
-    {% endif %}
+        <br>
+        <p>instance.type : {{ instanceType }}
+            <br>instance.lifecycle : {{ instanceLifecycle }}
+            {% if instanceLifecycle == "spot" %}
+                {% if status %}
+                <div class="p-3 mb-2 bg-danger text-white">
+                    <!-- Display the countdown timer in an element -->
+                     <p id="demo"></p><h1>
+
+                    <script>
+                        // Set the date we're counting down to
+                        var countDownDate = new Date("{{ terminationNotice }}").getTime();
+
+                        // Update the count down every 1 second
+                        var x = setInterval(function() {
+
+                            // Get todays date and time
+                            var now = new Date().getTime();
+
+                            // Find the distance between now an the count down date
+                            var distance = countDownDate - now;
+
+                            // Time calculations for days, hours, minutes and seconds
+                            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                            // Display the result in the element with id="demo"
+                            document.getElementById("demo").innerHTML = days + "d " + hours + "h "
+                                + minutes + "m " + seconds + "s ";
+
+                            // If the count down is finished, write some text
+                            if (distance < 0) {
+                                clearInterval(x);
+                                document.getElementById("demo").innerHTML = "<img src=\"{{url_for('static', filename='ima.gif')}}\" />";
+                            }
+                        }, 1000);
+                    </script></h1>
+                 </div>
+                {% else %}
+                <div>No termination notice</div>
+                {% endif %}
+            {% else %}
+            <div><img height="250" src="{{url_for('static', filename='mp.gif')}}" /></div>
+            {% endif %}
 </div>
 </body>
 </html>
