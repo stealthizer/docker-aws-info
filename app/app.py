@@ -5,21 +5,38 @@ import requests
 
 
 app = Flask(__name__)
+region = 'eu-west-1'
 
 def get_termination_time_demo():
-    dynamodb = session.resource('dynamodb', region_name=region)
+    dynamodb = boto3.resource('dynamodb', region_name=region)
     table = dynamodb.Table('terminateDB')
     try:
         response = table.scan(Limit=1)
-        terminationNotice = response['Items'][0]['termination']
-        status = 'terminate'
+        return response['Items'][0]['termination']
     except Exception as e:
         print(e)
-        terminationNotice = "No Termination Notice"
-        status = None
+        return None
+
+def get_termination_notice_metadata():
+    response = requests.get('http://169.254.169.254/latest/meta-data/spot/termination-time')
+    if response.status_code == 404:
+        return None
+    else:
+        return response.text
+
+def get_termination_notice():
+    terminationNotice_metadata = get_termination_notice_metadata()
+    terminationNotice_demo = get_termination_time_demo()
+    if terminationNotice_demo is not None or terminationNotice_metadata is not None:
+        if terminationNotice_metadata is not None:
+            return terminationNotice_metadata
+        else:
+            return terminationNotice_demo
+    else:
+        return None
 
 def describe_instances(instanceId):
-    client = boto3.client('ec2', region_name='eu-west-1')
+    client = boto3.client('ec2', region_name=region)
     try:
         instances = client.describe_instances(InstanceIds=[instanceId])
         return instances
@@ -43,20 +60,19 @@ def aws_info():
     except:
         instanceLifecycle = 'normal'
     else:
-        response = requests.get('http://169.254.169.254/latest/meta-data/spot/termination-time')
-        if response.status_code == 404:
-            terminationNotice = 'no termination notice'
+        result = get_termination_notice()
+        if result is None:
+            terminationNotice = 'No termination notice'
             status = None
         else:
-            terminationNotice = response.text
-            status = 'terminate'
-        get_termination_time_demo()
-
+            terminationNotice = result
+            status = "terminate"
 
     print(status)
     print(terminationNotice)
     return render_template('instance_template.html', instanceId=instanceId, instanceType=instanceType,
                            instanceLifecycle=instanceLifecycle, terminationNotice=terminationNotice, status=status)
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
