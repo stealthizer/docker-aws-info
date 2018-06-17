@@ -45,7 +45,7 @@
                             // If the count down is finished, write some text
                             if (distance < 0) {
                                 clearInterval(x);
-                                document.getElementById("demo").innerHTML = "<img src=\"{{url_for('static', filename='ima.gif')}}\" />";
+                                document.getElementById("demo").innerHTML = "<img src=\"{{url_for('static', filename='expired.gif')}}\" />";
                             }
                         }, 1000);
                     </script></h1>
@@ -54,7 +54,7 @@
                 <div>No termination notice</div>
                 {% endif %}
             {% else %}
-            <div><img height="250" src="{{url_for('static', filename='mp.gif')}}" /></div>
+            <div><img height="250" src="{{url_for('static', filename='win.gif')}}" /></div>
             {% endif %}
 </div>
 </body>
