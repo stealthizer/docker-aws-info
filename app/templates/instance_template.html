@@ -9,7 +9,7 @@
 </head>
 <body>
 <div class="container">
-    <h1>{{ instanceId }}</h2>
+    <h1>{{ instanceId }}</h1>
         <br>
         <p>instance.type : {{ instanceType }}
             <br>instance.lifecycle : {{ instanceLifecycle }}
@@ -39,22 +39,21 @@
                             var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
                             // Display the result in the element with id="demo"
-                            document.getElementById("demo").innerHTML = days + "d " + hours + "h "
-                                + minutes + "m " + seconds + "s ";
+                            document.getElementById("demo").innerHTML = "<center><img src=\"{{url_for('static', filename='warning.gif')}}\" alt=\"Countdown\" width=\"600\" /><p><h1>" + minutes + "m " + seconds + "s</h1>";
 
                             // If the count down is finished, write some text
                             if (distance < 0) {
                                 clearInterval(x);
-                                document.getElementById("demo").innerHTML = "<img src=\"{{url_for('static', filename='expired.gif')}}\" />";
+                                document.getElementById("demo").innerHTML = "<centrer><img src=\"{{url_for('static', filename='expired.gif')}}\" alt=\"Everything is Awesome\"  width=\"600\" /></centrer>";
                             }
                         }, 1000);
                     </script></h1>
                  </div>
                 {% else %}
-                <div>No termination notice</div>
+                <div><center><img src="{{url_for('static', filename='spot.gif')}}" alt="Everything is Awesome" width="600" /></center></div>
                 {% endif %}
             {% else %}
-            <div><img height="250" src="{{url_for('static', filename='win.gif')}}" /></div>
+<div><center><img height="250" src="{{url_for('static', filename='win.gif')}}" alt="Everything is Awesome" width="600"/></center></div>
             {% endif %}
 </div>
 </body>
